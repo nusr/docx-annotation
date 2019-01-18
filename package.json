@@ -11,6 +11,12 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/nusr/docx-annotation",
+  "keywords": [
+    "docx",
+    "annotation",
+    "convert",
+    "preview"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/nusr/docx-annotation.git"
