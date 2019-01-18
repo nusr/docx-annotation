@@ -8,7 +8,9 @@
 
   <body>
     <script src="https://unpkg.com/vue@2.5.22/dist/vue.js"></script>
-    <script src="../dist/docx-annotation.min.js"></script>
+    <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+    <script src="https://unpkg.com/axios@0.18.0/dist/axios.min.js"></script>
+    <script src="../dist/docx-annotation.js"></script>
     <a
       href="https://github.com/nusr/docx-annotation"
       class="github-corner"
@@ -18,7 +20,7 @@
         width="80"
         height="80"
         viewBox="0 0 250 250"
-        style="fill:#4AB7BD; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
+        style="fill:#409eff; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
         aria-hidden="true"
       >
         <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
@@ -38,21 +40,138 @@
     <div id="app">
       <template>
         <h1>docx-annotation</h1>
+       
         <div class="container">
-          <div class="example-item"><h3>simple example</h3></div>
+          <div class="example-item">
+            <h3>request file example</h3>
+            <pre>
+                <code>
+                    &lt;template&gt;
+                      &lt;docx-annotation session-key="annotationRequest" ref="annotationRequest"/&gt;
+                    &lt;/template&gt;
+                    &lt;script&gt;
+                        export default{
+                          mounted(){
+                            axios({
+                              method: "get",
+                              url: filePath,
+                              responseType: "arraybuffer"
+                            }).then(({ data }) =&gt; {
+                              console.dir(data)
+                              this.$refs.annotationRequest.wordToHtml(data);
+                            });
+                          }
+                        }
+                    &lt;/script&gt;
+                </code>
+              </pre>
+            <docx-annotation session-key="annotationRequest" ref="annotationRequest"/>
+          </div>
+          <h3>advanced example</h3>
+            <pre>
+                <code>
+                    &lt;template&gt;
+                      &lt;docx-annotation session-key="annotationAdvanced" :click-scroll="true" ref="annotationAdvanced"/&gt;
+                    &lt;/template&gt;
+                    &lt;script&gt;
+                        export default{
+                          mounted(){
+                            axios({
+                              method: "get",
+                              url: filePath,
+                              responseType: "arraybuffer"
+                            }).then(({ data }) =&gt; {
+                              console.dir(data)
+                              this.$refs.annotationAdvanced.wordToHtml(data);
+                            });
+                          }
+                        }
+                    &lt;/script&gt;
+                </code>
+              </pre>
+            <docx-annotation session-key="annotationAdvanced" :click-scroll="true" ref="annotationAdvanced"/>
+          </div>
+          <div class="example-item">
+              <h3>input  file example</h3>
+              <pre>
+                  <code>
+                      &lt;template&gt;
+                        &lt;docx-annotation session-key="annotationInput" ref="annotationRequest"/&gt;
+                      &lt;/template&gt;
+                      &lt;script&gt;
+                          export default{
+                            mounted(){
+                              let _this = this;
+                              $("#input-file-container").bind("change", function(event) {
+                                let file = event.target.files[0]
+                                let reader = new FileReader()
+                                reader.onload = function(loadEvent) {
+                                  let arrayBuffer = loadEvent.target.result
+                                  _this.$refs.annotationInput.wordToHtml(arrayBuffer)
+                                }
+                                reader.readAsArrayBuffer(file)
+                              })
+                            }
+                          }
+                      &lt;/script&gt;
+                  </code>
+                </pre>
+              <input id="input-file-container" type="file" accept=".docx" style="margin-bottom:20px;"/>
+              <docx-annotation session-key="annotationInput" ref="annotationInput"/>
+            </div>
         </div>
       </template>
     </div>
     <script>
-      var Main = {
-        name: "test",
-        data() {
-          return {}
-        },
-        methods: {}
-      }
-      var Ctor = Vue.extend(Main)
-      new Ctor().$mount("#app")
+      
+      var filePath = "./test.docx"
+      var main = {
+          data() {
+            return {
+              requestCode: `
+              
+              `
+            }
+          },
+          mounted(){
+            this.getWordContent()
+            this.getAdvancedContent()
+            let _this = this;
+            $("#input-file-container").bind("change", function(event) {
+              let file = event.target.files[0]
+              let reader = new FileReader()
+              reader.onload = function(loadEvent) {
+                let arrayBuffer = loadEvent.target.result
+                _this.$refs.annotationInput.wordToHtml(arrayBuffer)
+              }
+              reader.readAsArrayBuffer(file)
+            })
+          },
+          methods:{
+            getAdvancedContent(){
+              axios({
+                method: "get",
+                url: filePath,
+                responseType: "arraybuffer"
+              }).then(({ data }) => {
+                console.dir(data)
+                this.$refs.annotationAdvanced.wordToHtml(data);
+              });
+            },
+            getWordContent(){
+              axios({
+                method: "get",
+                url: filePath,
+                responseType: "arraybuffer"
+              }).then(({ data }) => {
+                console.dir(data)
+                this.$refs.annotationRequest.wordToHtml(data);
+              });
+            }
+          }
+       }
+      var annotation = Vue.extend(main)
+      new annotation().$mount('#app')
     </script>
   </body>
 </html>

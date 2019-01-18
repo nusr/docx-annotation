@@ -1,0 +1,200 @@
+/*
+ * @Author: Steve Xu 
+ * @Date: 2019-01-18 16:05:18 
+ * @Last Modified by: 徐琦
+ * @Last Modified time: 2019-01-18 17:15:00
+ */
+$active-color: #ff0000;
+$base-distance: 20px;
+$border-color: #ddd;
+@mixin note-style() {
+  border: 1px solid $border-color;
+  box-shadow: 4px 4px 10px #e6e6e6;
+  background-color: #fff;
+  padding: $base-distance / 2;
+  width: 305px;
+  box-sizing: border-box;
+}
+/*容器 */
+.doc-container {
+  position: relative;
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    p {
+      margin: 0;
+    }
+  }
+
+  td,
+  th {
+    border: 1px solid #333;
+    padding-left: $base-distance/2;
+    padding-right: $base-distance/2;
+  }
+  [class^="special-color"],
+  .special-color {
+    background-color: #ccc;
+    position: relative;
+    &::after {
+      white-space: normal;
+      position: relative;
+      top: -0.5em;
+      line-height: 0;
+      font-size: 75%;
+      vertical-align: baseline;
+      cursor: pointer;
+      content: attr(data-num);
+    }
+  }
+  [class^="special-color"].active {
+    border-bottom: 2px solid $active-color;
+    position: relative;
+  }
+  .comment-detail-info {
+    display: none;
+    position: absolute;
+    @include note-style;
+    .triangle-bg {
+      bottom: -8px;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 10px solid #fff;
+      z-index: 1;
+    }
+    .triangle-border {
+      bottom: -10px;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 10px solid $border-color;
+    }
+    .triangle-bg,
+    .triangle-border {
+      width: 0;
+      height: 0;
+      position: absolute;
+      left: 10px;
+    }
+    .tip {
+      color: #999;
+    }
+  }
+  .button {
+    padding: 7px 15px;
+    border: 1px solid $border-color;
+    margin-left: $base-distance / 2;
+    cursor: pointer;
+  }
+  .danger {
+    background-color: #f00;
+    color: #fff;
+    border-radius: 4px;
+  }
+}
+
+// 在线预览区
+.doc-content {
+  margin-right: 300px;
+  border: 1px solid $border-color;
+  &__html {
+    width: 100%;
+    padding: $base-distance;
+    box-sizing: border-box;
+  }
+  &__note {
+    right: -$base-distance;
+    position: absolute;
+    @include note-style;
+    z-index: 5;
+  }
+  &__textarea {
+    width: 100%;
+  }
+  &__comment {
+    width: 300px;
+    position: absolute;
+    right: -$base-distance;
+    border: 1px solid $border-color;
+    box-shadow: 4px 4px 10px #e6e6e6;
+    background-color: #fff;
+    padding: $base-distance / 2;
+    box-sizing: border-box;
+    z-index: 3;
+  }
+  &__button {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: $base-distance / 2;
+  }
+  &__anchor {
+    border-bottom: 14px solid rgba(0, 0, 0, 0);
+    border-right: 14px solid $border-color;
+    top: 28px;
+    left: -14px;
+    border-top: 14px solid rgba(0, 0, 0, 0);
+    width: 0;
+    height: 0;
+    position: absolute;
+    > div {
+      border-bottom: 12px solid rgba(0, 0, 0, 0);
+      border-right: 12px solid #fff;
+      margin-left: 2px;
+      border-top: 12px solid rgba(0, 0, 0, 0);
+      position: relative;
+      top: -12px;
+    }
+  }
+}
+
+// 评论区
+.doc-comment {
+  width: 280px;
+  right: 0;
+  top: 0;
+  position: absolute;
+  border: 1px solid $border-color;
+  z-index: 4;
+  background: #fff;
+
+  .item-content {
+    padding-top: $base-distance/4;
+    color: #999;
+  }
+  .item-wrap {
+    display: flex;
+    justify-content: space-between;
+    &__content {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3; //想要的行数
+      -webkit-box-orient: vertical;
+    }
+    .el-icon-delete {
+      padding-left: $base-distance/ 2;
+      padding-right: $base-distance/ 2;
+      color: $active-color;
+    }
+  }
+  &__empty {
+    padding: $base-distance / 2;
+  }
+  &__head {
+    padding: $base-distance/2;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  li {
+    padding: $base-distance / 2;
+    border-bottom: 1px solid $border-color;
+    &.active {
+      background-color: #e4e4e4;
+      .item-content {
+        color: $active-color;
+      }
+    }
+  }
+}
