@@ -1,11 +1,10 @@
 /*
  * @Author: Steve Xu
  * @Date: 2019-01-18 16:00:25
- * @Last Modified by: 徐琦
- * @Last Modified time: 2019-01-21 12:05:53
+ * @Last Modified by: Steve Xu
+ * @Last Modified time: 2019-01-21 13:28:32
  */
 import $ from "jquery"
-import throttle from "lodash.throttle"
 import rangy from "./rangy-core.js"
 import "./rangy-classapplier.js"
 import "./rangy-highlighter.js"
@@ -27,7 +26,6 @@ const MAMMOTH_OPTIONS = {
 }
 // 开始索引较小的排在前面
 const sortMethod = (a, b) => (a > b ? 1 : -1)
-let highlighter
 const COMMENT_ATTR_KEY = "data-comment-id"
 export default {
   name: "docx-annotation",
@@ -56,14 +54,12 @@ export default {
         end: "", // 被批注结束位置
         id: "" // 批注id
       },
+      highlighter: null,
       commentList: [], // 批注列表
       showComment: true, // 是否显示批注输入框  true 不显示
       containerId: "doc-html__" + +new Date(), // 容器 ID
       commentDetail: "" // 批注详情
     }
-  },
-  mounted() {
-    this.initPage()
   },
   methods: {
     /**
@@ -72,33 +68,6 @@ export default {
      */
     isEmpty(val) {
       return val == null || !(Object.keys(val) || val).length
-    },
-    /**
-     * 初始化
-     */
-    initPage() {
-      let delayTime = 50
-      let _this = this
-      $(document).on(
-        "scroll",
-        throttle(function() {
-          _this.resetFormData()
-          $(".comment-detail-info").hide()
-          // let commentClassName = ".doc-comment"
-          // _this.showComment = true
-          // if ($(this).scrollTop() > 125) {
-          //   $(commentClassName).css({
-          //     position: "fixed",
-          //     right: 20
-          //   })
-          // } else {
-          //   $(commentClassName).css({
-          //     position: "absolute",
-          //     right: 0
-          //   })
-          // }
-        }, delayTime / 2)
-      )
     },
     /**
      * docx 转换为 html
@@ -138,9 +107,9 @@ export default {
     initHighlight() {
       rangy.init()
       this.commentList = this.value
-      highlighter = rangy.createHighlighter()
+      this.highlighter = rangy.createHighlighter()
       this.ResetClassApplier(COLOR_BOX_PREFIX, "")
-      highlighter.highlightSelection(COLOR_BOX_PREFIX, {
+      this.highlighter.highlightSelection(COLOR_BOX_PREFIX, {
         containerElementId: this.containerId
       })
       let data = this.commentList
@@ -150,7 +119,7 @@ export default {
       }
       for (let item of data) {
         let className = item.class + "_" + item.id
-        let highlight = highlighter.addHighlight(
+        let highlight = this.highlighter.addHighlight(
           item,
           this.ResetClassApplier(className, item.id),
           this.containerId
@@ -171,7 +140,7 @@ export default {
         $(className).addClass(ACTIVE_CLASS)
         $("#highlight_" + item.id).addClass(ACTIVE_CLASS)
       }
-      let highlight = highlighter.highlights.find(v => v.id === item.id)
+      let highlight = this.highlighter.highlights.find(v => v.id === item.id)
       if (highlight) {
         highlight.apply()
       }
@@ -211,7 +180,7 @@ export default {
           [COMMENT_ATTR_KEY]: commentId
         }
       })
-      highlighter.addClassApplier(applier)
+      this.highlighter.addClassApplier(applier)
       return applier
     },
     /**
@@ -248,7 +217,7 @@ export default {
         )
       }
 
-      let root = highlighter.highlightSelection(COLOR_BOX_PREFIX, {
+      let root = this.highlighter.highlightSelection(COLOR_BOX_PREFIX, {
         containerElementId: this.containerId
       })
       let selectText = rangy.getSelection().toString()
@@ -256,7 +225,9 @@ export default {
       if (this.isEmpty(root) || this.isEmpty(selectText)) return false
       let noteTodo = null
       /* 复制 highlight Begin */
-      noteTodo = highlighter.highlights[highlighter.highlights.length - 1]
+      noteTodo = this.highlighter.highlights[
+        this.highlighter.highlights.length - 1
+      ]
       this.formData = Object.assign(this.formData, {
         selectText,
         start: noteTodo.characterRange.start,
@@ -278,7 +249,7 @@ export default {
       if (!id) {
         return null
       }
-      return highlighter.highlights.find(item => item.id === id)
+      return this.highlighter.highlights.find(item => item.id === id)
     },
     /**
      * 确认添加的批注
@@ -294,8 +265,8 @@ export default {
       )
       this.commentList.push(annotation)
 
-      let len = highlighter.highlights.length - 1
-      let item = highlighter.highlights[len]
+      let len = this.highlighter.highlights.length - 1
+      let item = this.highlighter.highlights[len]
       item.id = annotation.id
       let className = COLOR_BOX_PREFIX + "_" + annotation.id
       item.classApplier = this.ResetClassApplier(className, annotation.id)
@@ -318,7 +289,7 @@ export default {
      * @param {Number} index
      */
     cancelComment(index) {
-      let temp = highlighter.highlights
+      let temp = this.highlighter.highlights
       this.showComment = true
       if (index < 0 || index >= temp.length) {
         index = temp.length - 1
@@ -338,7 +309,7 @@ export default {
       this.commentList = this.commentList.filter(
         item => item.id !== annotation.id
       )
-      let list = highlighter.highlights
+      let list = this.highlighter.highlights
       let index = list.findIndex(item => item.id === annotation.id)
       this.cancelComment(index)
       this.saveLastData()
@@ -354,7 +325,7 @@ export default {
         return sortMethod(a.start, b.start)
       })
       this.$emit("input", this.commentList)
-      highlighter.highlights.sort((a, b) => {
+      this.highlighter.highlights.sort((a, b) => {
         return sortMethod(a.characterRange.start, b.characterRange.start)
       })
       for (let i = 0; i < commentList.length; i++) {

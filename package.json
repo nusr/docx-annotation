@@ -1,7 +1,7 @@
 {
   "name": "docx-annotation",
   "description": "It's a vue component that will convert docx to html and annotate html",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "author": "Steve <stevexugc@gmail.com>",
   "main": "dist/docx-annotation.js",
   "private": false,
@@ -29,7 +29,6 @@
   ],
   "dependencies": {
     "jquery": "^3.3.1",
-    "lodash.throttle": "^4.1.1",
     "mammoth": "^1.4.7"
   },
   "devDependencies": {
