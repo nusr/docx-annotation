@@ -1,6 +1,13 @@
+<p align="center">
+  <a href="https://npmcharts.com/compare/docx-annotation"><img src="https://img.shields.io/npm/dm/docx-annotation.svg" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/docx-annotation"><img src="https://img.shields.io/npm/v/docx-annotation.svg" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/docx-annotation"><img src="https://img.shields.io/npm/l/docx-annotation.svg" alt="License"></a>
+</p>
+
 # docx-annotation
 
 > It's a vue component that will convert docx to HTML an annotate HTML.
+
 > docx 文件转换为 HTML,以及 HTML 的在线批注功能。
 
 ## Features
@@ -164,6 +171,7 @@ Highlighter.prototype = {
 | value       | comment list           |  Array  |   []    |
 | clickScroll | scroll to docx content | Boolean |  false  |
 
+<br>
 
 | Event         | Description                |
 | ------------- | -------------------------- |
