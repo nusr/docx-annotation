@@ -1,11 +1,12 @@
 # docx-annotation
 
-> It's a vue component that will convert docx to html an annotate html.
+> It's a vue component that will convert docx to HTML an annotate HTML.
+> docx 文件转换为 HTML,以及 HTML 的在线批注功能。
 
 ## Features
 
-1. javaScript convert docx to html
-2. annotate html online
+1. javaScript convert docx to HTML
+2. annotate HTML online
 3. restore annotations from request
 
 ### How to use ?
@@ -22,7 +23,7 @@ npm install --save docx-annotation
 
 ## online demo
 
-[online demo](https://nusr.github.io/frontEnd/docx-annotation/)
+[online demo](https://nusr.github.io/docx-annotation/demo/)
 
 ## custom rangy library
 
@@ -53,44 +54,67 @@ Highlighter.prototype = {
 
 ## request file example
 
-````html
+```html
 <template>
-  <docx-annotation session-key="annotationRequest" ref="annotationRequest" />
+  <docx-annotation @convert-start="convertStart" @convert-end="convertEnd" v-model="requestList" ref="annotationRequest" />
 </template>
 <script>
   export default {
+    data(){
+      return {
+        requestList:[]
+      }
+    },
     mounted() {
       axios({ method: "get", url: filePath, responseType: "arraybuffer" }).then(
         ({ data }) => {
-          console.dir(data)
           this.$refs.annotationRequest.wordToHtml(data)
         }
       )
+    },
+    methods:{
+       convertStart(){
+          console.log('convert-start')
+        },
+        convertEnd(){
+          console.log('convert-end')
+        }
     }
   }
 </script>
 ```
-````
 
 ## advanced example
 
 ```html
 <template>
   <docx-annotation
-    session-key="annotationAdvanced"
+    @convert-start="convertStart" @convert-end="convertEnd" v-model="advancedList"
     :click-scroll="true"
     ref="annotationAdvanced"
   />
 </template>
 <script>
   export default {
+    data(){
+      return {
+        advancedList:[]
+      }
+    },
     mounted() {
       axios({ method: "get", url: filePath, responseType: "arraybuffer" }).then(
         ({ data }) => {
-          console.dir(data)
-          this.$refs.annotationAdvanced.wordToHtml(data)
+          this.$refs.annotationRequest.wordToHtml(data)
         }
       )
+    },
+    methods:{
+       convertStart(){
+          console.log('convert-start')
+        },
+        convertEnd(){
+          console.log('convert-end')
+        }
     }
   }
 </script>
@@ -100,10 +124,15 @@ Highlighter.prototype = {
 
 ```html
 <template>
-  <docx-annotation session-key="annotationInput" ref="annotationRequest" />
+  <docx-annotation @convert-start="convertStart" @convert-end="convertEnd" v-model="inputList" ref="annotationInput" />
 </template>
 <script>
   export default {
+    data(){
+      return {
+        inputList:[]
+      }
+    },
     mounted() {
       let _this = this
       $("#input-file-container").bind("change", function(event) {
@@ -115,14 +144,29 @@ Highlighter.prototype = {
         }
         reader.readAsArrayBuffer(file)
       })
+    },
+    methods:{
+       convertStart(){
+          console.log('convert-start')
+        },
+        convertEnd(){
+          console.log('convert-end')
+        }
     }
   }
 </script>
 ```
 
-### Options
+## Options
 
-| Property    | Description            |  type   |    default    |
-| ----------- | ---------------------- | :-----: | :-----------: |
-| sessionKey  | sessionStorage key     | String  | 'storage-key' |
-| clickScroll | scroll to docx content | Boolean |     false     |
+| Property    | Description            |  type   | default |
+| ----------- | ---------------------- | :-----: | :-----: |
+| value       | comment list           |  Array  |   []    |
+| clickScroll | scroll to docx content | Boolean |  false  |
+
+
+| Event         | Description                |
+| ------------- | -------------------------- |
+| convert-start | start convert docx to HTML |
+| convert-end   | convert end                |
+

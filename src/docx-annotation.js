@@ -1,16 +1,15 @@
 /*
- * @Author: Steve Xu 
- * @Date: 2019-01-18 16:00:25 
+ * @Author: Steve Xu
+ * @Date: 2019-01-18 16:00:25
  * @Last Modified by: 徐琦
- * @Last Modified time: 2019-01-18 17:48:53
+ * @Last Modified time: 2019-01-21 12:05:53
  */
-
+import $ from "jquery"
 import throttle from "lodash.throttle"
 import rangy from "./rangy-core.js"
 import "./rangy-classapplier.js"
 import "./rangy-highlighter.js"
 import mammoth from "mammoth"
-let storageKey = "storage-key"
 const COLOR_BOX_PREFIX = "special-color"
 const ACTIVE_CLASS = "active"
 const HIGHLIGHT_ID_PREFIX = "highlight_"
@@ -31,11 +30,14 @@ const sortMethod = (a, b) => (a > b ? 1 : -1)
 let highlighter
 const COMMENT_ATTR_KEY = "data-comment-id"
 export default {
+  name: "docx-annotation",
   props: {
-    sessionKey: {
-      // 存储的 sessionStorage key
-      type: String,
-      default: storageKey
+    value: {
+      // 批注列表
+      type: Array,
+      default() {
+        return []
+      }
     },
     clickScroll: {
       // 是否批注滚动到被批注处,默认不滚动
@@ -43,7 +45,6 @@ export default {
       default: false
     }
   },
-
   data() {
     return {
       highlightClass: HIGHLIGHT_ID_PREFIX, // 批注高亮 id 前缀
@@ -63,7 +64,6 @@ export default {
   },
   mounted() {
     this.initPage()
-    storageKey = this.sessionKey
   },
   methods: {
     /**
@@ -83,8 +83,8 @@ export default {
         "scroll",
         throttle(function() {
           _this.resetFormData()
-          let commentClassName = ".doc-comment"
           $(".comment-detail-info").hide()
+          // let commentClassName = ".doc-comment"
           // _this.showComment = true
           // if ($(this).scrollTop() > 125) {
           //   $(commentClassName).css({
@@ -105,7 +105,7 @@ export default {
      * @param {arrayBuffer} arrayBuffer
      */
     wordToHtml(arrayBuffer) {
-      let startTime = +new Date()
+      this.$emit("convert-start")
       mammoth
         .convertToHtml({ arrayBuffer: arrayBuffer }, MAMMOTH_OPTIONS)
         .then(({ value, messages }) => {
@@ -113,11 +113,9 @@ export default {
           let message = messages
             .map(item => this.escapeHtml(item.message))
             .join(",")
-          console.log("wordToHtml", message)
-          let seconds = (+new Date() - startTime) / 1000
-          console.log("转换花费时间：" + seconds + "秒")
+          this.$emit("convert-end")
           if (!value) {
-            this.$message.error("docx 转换为 html 失败," + message)
+            console.error("docx 转换为 html 失败," + message)
           }
           this.initHighlight()
         })
@@ -139,15 +137,14 @@ export default {
      */
     initHighlight() {
       rangy.init()
-      let storageData = sessionStorage.getItem(storageKey) || "[]"
-      this.commentList = JSON.parse(storageData)
+      this.commentList = this.value
       highlighter = rangy.createHighlighter()
       this.ResetClassApplier(COLOR_BOX_PREFIX, "")
       highlighter.highlightSelection(COLOR_BOX_PREFIX, {
         containerElementId: this.containerId
       })
       let data = this.commentList
-      console.log(data)
+
       if (this.isEmpty(data)) {
         return
       }
@@ -255,7 +252,7 @@ export default {
         containerElementId: this.containerId
       })
       let selectText = rangy.getSelection().toString()
-      // console.log('mouseUpHandler', root, selectText)
+
       if (this.isEmpty(root) || this.isEmpty(selectText)) return false
       let noteTodo = null
       /* 复制 highlight Begin */
@@ -272,11 +269,9 @@ export default {
           $(noteTodo.getHighlightElements()[0]).offset().top -
           $("#" + this.containerId).offset().top
 
-        console.log(offset)
         $(".doc-content__note").css("top", offset)
       }
       this.showComment = false
-      console.dir(highlighter.highlights)
     },
 
     getCurrentHighlightById(id) {
@@ -298,6 +293,7 @@ export default {
         formData
       )
       this.commentList.push(annotation)
+
       let len = highlighter.highlights.length - 1
       let item = highlighter.highlights[len]
       item.id = annotation.id
@@ -308,7 +304,6 @@ export default {
       this.saveLastData()
       this.showComment = true
       this.resetFormData()
-      console.log(this.commentList)
     },
     resetFormData() {
       this.formData = {
@@ -340,24 +335,14 @@ export default {
      * @param {Object} annotation
      */
     deleteComment(annotation) {
-      this.$confirm("此操作将永久删除该批注, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      }).then(() => {
-        this.commentList = this.commentList.filter(
-          item => item.id !== annotation.id
-        )
-        console.log(highlighter)
-        let list = highlighter.highlights
-        let index = list.findIndex(item => item.id === annotation.id)
-        this.cancelComment(index)
-        this.saveLastData()
-        this.$message({
-          type: "success",
-          message: "删除成功!"
-        })
-      })
+      this.commentList = this.commentList.filter(
+        item => item.id !== annotation.id
+      )
+      let list = highlighter.highlights
+      let index = list.findIndex(item => item.id === annotation.id)
+      this.cancelComment(index)
+      this.saveLastData()
+      console.log("删除成功!")
     },
 
     /**
@@ -368,6 +353,7 @@ export default {
       commentList.sort((a, b) => {
         return sortMethod(a.start, b.start)
       })
+      this.$emit("input", this.commentList)
       highlighter.highlights.sort((a, b) => {
         return sortMethod(a.characterRange.start, b.characterRange.start)
       })
@@ -378,7 +364,6 @@ export default {
           .last()
           .attr("data-num", `[${i + 1}]`)
       }
-      sessionStorage.setItem(storageKey, JSON.stringify(this.commentList))
     },
     /**
      * 删除所有批注

@@ -5,7 +5,6 @@ body {
 
 code {
   display: block;
-  padding: 8px 15px;
   background-color: #f6f8fa;
   border-radius: 5px;
   border: 1px solid #e5e5e5;
@@ -13,36 +12,19 @@ code {
   font-size: 12px;
 }
 
-p,
-ul,
-ol,
-table,
-pre,
-dl {
-  margin: 0;
-  padding: 0;
-}
-li,
-ul {
-  list-style: none;
-}
 h1 {
   color: #409eff;
-  font-size: 60px;
-  text-align: center;
 }
 
 h3 {
-  font-size: 36px;
   color: #494949;
-  line-height: 1.1;
 }
 
-.github-corner:hover .octo-arm {
-  animation: octocat-wave 560ms ease-in-out;
+.github-corner:hover .github-arm {
+  animation: waveAnimation 560ms ease-in-out;
 }
 
-@keyframes octocat-wave {
+@keyframes waveAnimation {
   0%,
   100% {
     transform: rotate(0);
@@ -58,11 +40,11 @@ h3 {
 }
 
 @media (max-width: 500px) {
-  .github-corner:hover .octo-arm {
+  .github-corner:hover .github-arm {
     animation: none;
   }
-  .github-corner .octo-arm {
-    animation: octocat-wave 560ms ease-in-out;
+  .github-corner .github-arm {
+    animation: waveAnimation 560ms ease-in-out;
   }
 }
 img {
@@ -75,4 +57,158 @@ img {
 
 .example-item {
   margin-bottom: 80px;
+}
+
+.loader-wrap {
+  position: absolute;
+  top: 35vh;
+  left: 50vw;
+  margin-left: -35px;
+  z-index: 9;
+}
+.loader {
+  position: absolute;
+  top: 0;
+  z-index: 5;
+  width: 50px;
+  height: 50px;
+  border: 15px solid;
+  border-radius: 50%;
+  border-top-color: rgba(44, 44, 44, 0);
+  border-right-color: rgba(55, 55, 55, 0);
+  border-bottom-color: rgba(66, 66, 66, 0);
+  border-left-color: rgba(33, 33, 33, 0);
+  animation: loaderAnimation 3s infinite;
+}
+.loader-before {
+  width: 50px;
+  height: 50px;
+  border: 15px solid #ddd;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  z-index: 9;
+}
+
+.circular {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  width: 70px;
+  height: 70px;
+  border: 20px solid;
+  border-radius: 50%;
+  border-top-color: #333;
+  border-left-color: #fff;
+  border-bottom-color: #333;
+  border-right-color: #fff;
+  opacity: 0.2;
+  animation: circularAnimation 5s infinite;
+}
+.another {
+  opacity: 0.1;
+  transform: rotate(90deg);
+  animation: anotherAnimation 5s infinite;
+  animation-delay: 1s;
+}
+.text {
+  position: absolute;
+  top: 95px;
+  left: 8px;
+  color: #888;
+  animation: textAnimation 10s infinite;
+}
+@keyframes loaderAnimation {
+  0% {
+    border-top-color: rgba(44, 44, 44, 0);
+    border-right-color: rgba(55, 55, 55, 0);
+    border-bottom-color: rgba(66, 66, 66, 0);
+    border-left-color: rgba(33, 33, 33, 0);
+  }
+  10.4% {
+    border-top-color: rgba(44, 44, 44, 0.5);
+    border-right-color: rgba(55, 55, 55, 0);
+    border-bottom-color: rgba(66, 66, 66, 0);
+    border-left-color: rgba(33, 33, 33, 0);
+  }
+  20.8% {
+    border-top-color: rgba(44, 44, 44, 0);
+    border-right-color: rgba(55, 55, 55, 0);
+    border-bottom-color: rgba(66, 66, 66, 0);
+    border-left-color: rgba(33, 33, 33, 0);
+  }
+  31.2% {
+    border-top-color: rgba(44, 44, 44, 0);
+    border-right-color: rgba(55, 55, 55, 0.5);
+    border-bottom-color: rgba(66, 66, 66, 0);
+    border-left-color: rgba(33, 33, 33, 0);
+  }
+  41.6% {
+    border-top-color: rgba(44, 44, 44, 0);
+    border-right-color: rgba(55, 55, 55, 0);
+    border-bottom-color: rgba(66, 66, 66, 0);
+    border-left-color: rgba(33, 33, 33, 0);
+    transform: rotate(40deg);
+  }
+  52% {
+    border-top-color: rgba(44, 44, 44, 0);
+    border-right-color: rgba(55, 55, 55, 0);
+    border-bottom-color: rgba(66, 66, 66, 0.5);
+    border-left-color: rgba(33, 33, 33, 0);
+  }
+  62.4% {
+    border-top-color: rgba(44, 44, 44, 0);
+    border-right-color: rgba(55, 55, 55, 0);
+    border-bottom-color: rgba(66, 66, 66, 0);
+    border-left-color: rgba(33, 33, 33, 0);
+  }
+  72.8% {
+    border-top-color: rgba(44, 44, 44, 0);
+    border-right-color: rgba(55, 55, 55, 0);
+    border-bottom-color: rgba(66, 66, 66, 0);
+    border-left-color: rgba(33, 33, 33, 0.5);
+  }
+}
+
+@keyframes circularAnimation {
+  0% {
+    transform: scale(1, 1) rotate(0deg);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(4, 4) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes anotherAnimation {
+  0% {
+    transform: scale(1, 1) rotate(90deg);
+    opacity: 0.1;
+  }
+  50% {
+    transform: scale(4, 4) rotate(-360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes textAnimation {
+  0% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  15% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.8;
+  }
 }
