@@ -42,52 +42,57 @@ Highlighter.prototype = {
    * @param {Object} applier
    * @param {String} containerElementId
    */
-  addHighlight: function(item, applier, containerElementId) {
-    var characterRange = new CharacterRange(+item.start, +item.end)
+  addHighlight: function (item, applier, containerElementId) {
+    var characterRange = new CharacterRange(+item.start, +item.end);
     var highlight = new Highlight(
       this.doc,
       characterRange,
       applier,
       this.converter,
       item.id,
-      containerElementId
-    )
-    highlight.apply()
-    this.highlights.push(highlight)
-    return highlight
-  }
-}
+      containerElementId,
+    );
+    highlight.apply();
+    this.highlights.push(highlight);
+    return highlight;
+  },
+};
 ```
 
 ## request file example
 
 ```html
 <template>
-  <docx-annotation @convert-start="convertStart" @convert-end="convertEnd" v-model="requestList" ref="annotationRequest" />
+  <docx-annotation
+    @convert-start="convertStart"
+    @convert-end="convertEnd"
+    v-model="requestList"
+    ref="annotationRequest"
+  />
 </template>
 <script>
   export default {
-    data(){
+    data() {
       return {
-        requestList:[]
-      }
+        requestList: [],
+      };
     },
     mounted() {
-      axios({ method: "get", url: filePath, responseType: "arraybuffer" }).then(
+      axios({ method: 'get', url: filePath, responseType: 'arraybuffer' }).then(
         ({ data }) => {
-          this.$refs.annotationRequest.wordToHtml(data)
-        }
-      )
-    },
-    methods:{
-       convertStart(){
-          console.log('convert-start')
+          this.$refs.annotationRequest.wordToHtml(data);
         },
-        convertEnd(){
-          console.log('convert-end')
-        }
-    }
-  }
+      );
+    },
+    methods: {
+      convertStart() {
+        console.log('convert-start');
+      },
+      convertEnd() {
+        console.log('convert-end');
+      },
+    },
+  };
 </script>
 ```
 
@@ -96,34 +101,36 @@ Highlighter.prototype = {
 ```html
 <template>
   <docx-annotation
-    @convert-start="convertStart" @convert-end="convertEnd" v-model="advancedList"
+    @convert-start="convertStart"
+    @convert-end="convertEnd"
+    v-model="advancedList"
     :click-scroll="true"
     ref="annotationAdvanced"
   />
 </template>
 <script>
   export default {
-    data(){
+    data() {
       return {
-        advancedList:[]
-      }
+        advancedList: [],
+      };
     },
     mounted() {
-      axios({ method: "get", url: filePath, responseType: "arraybuffer" }).then(
+      axios({ method: 'get', url: filePath, responseType: 'arraybuffer' }).then(
         ({ data }) => {
-          this.$refs.annotationRequest.wordToHtml(data)
-        }
-      )
-    },
-    methods:{
-       convertStart(){
-          console.log('convert-start')
+          this.$refs.annotationRequest.wordToHtml(data);
         },
-        convertEnd(){
-          console.log('convert-end')
-        }
-    }
-  }
+      );
+    },
+    methods: {
+      convertStart() {
+        console.log('convert-start');
+      },
+      convertEnd() {
+        console.log('convert-end');
+      },
+    },
+  };
 </script>
 ```
 
@@ -131,36 +138,41 @@ Highlighter.prototype = {
 
 ```html
 <template>
-  <docx-annotation @convert-start="convertStart" @convert-end="convertEnd" v-model="inputList" ref="annotationInput" />
+  <docx-annotation
+    @convert-start="convertStart"
+    @convert-end="convertEnd"
+    v-model="inputList"
+    ref="annotationInput"
+  />
 </template>
 <script>
   export default {
-    data(){
+    data() {
       return {
-        inputList:[]
-      }
+        inputList: [],
+      };
     },
     mounted() {
-      let _this = this
-      $("#input-file-container").bind("change", function(event) {
-        let file = event.target.files[0]
-        let reader = new FileReader()
-        reader.onload = function(loadEvent) {
-          let arrayBuffer = loadEvent.target.result
-          _this.$refs.annotationInput.wordToHtml(arrayBuffer)
-        }
-        reader.readAsArrayBuffer(file)
-      })
+      let _this = this;
+      $('#input-file-container').bind('change', function (event) {
+        let file = event.target.files[0];
+        let reader = new FileReader();
+        reader.onload = function (loadEvent) {
+          let arrayBuffer = loadEvent.target.result;
+          _this.$refs.annotationInput.wordToHtml(arrayBuffer);
+        };
+        reader.readAsArrayBuffer(file);
+      });
     },
-    methods:{
-       convertStart(){
-          console.log('convert-start')
-        },
-        convertEnd(){
-          console.log('convert-end')
-        }
-    }
-  }
+    methods: {
+      convertStart() {
+        console.log('convert-start');
+      },
+      convertEnd() {
+        console.log('convert-end');
+      },
+    },
+  };
 </script>
 ```
 
@@ -177,4 +189,3 @@ Highlighter.prototype = {
 | ------------- | -------------------------- |
 | convert-start | start convert docx to HTML |
 | convert-end   | convert end                |
-
